@@ -1022,6 +1022,18 @@ def normalize_anthropic_response(
     }
     finish_reason = stop_reason_map.get(response.stop_reason, "stop")
 
+    # Handle Anthropic 'sensitive' stop_reason (content policy filtering).
+    # When the model's response is blocked, content blocks may be empty and
+    # stop_reason is 'sensitive'.  Surface a clear user-facing message instead
+    # of crashing or silently returning None content.
+    if getattr(response, "stop_reason", None) == "sensitive":
+        finish_reason = "content_filter"
+        if not text_parts:
+            text_parts = [
+                "I'm sorry, but my response was filtered by Anthropic's content policy. "
+                "Please try rephrasing your request."
+            ]
+
     return (
         SimpleNamespace(
             content="\n".join(text_parts) if text_parts else None,

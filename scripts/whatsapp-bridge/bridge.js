@@ -301,6 +301,7 @@ async function startSocket() {
         senderName: msg.pushName || senderNumber,
         chatName: isGroup ? (chatId.split('@')[0]) : (msg.pushName || senderNumber),
         isGroup,
+        fromMe: !!msg.key.fromMe,
         body,
         hasMedia,
         mediaType,
