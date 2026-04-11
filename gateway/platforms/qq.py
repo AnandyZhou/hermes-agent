@@ -1415,6 +1415,7 @@ class QQBotAdapter(BasePlatformAdapter):
                 "file_type": file_type,
                 "file_data": file_data_b64,
                 "srv_send_msg": False,
+                "file_name": filename,
             }
             resp = await self._http_client.post(
                 endpoint, json=payload, headers=headers,
