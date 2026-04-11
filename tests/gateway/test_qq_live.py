@@ -15,7 +15,7 @@ Interactive test that connects to a real QQ Bot and exercises:
   - Slash commands
 
 Usage:
-    cd /Users/anandy/AI/hermes-agent
+    cd /path/to/hermes-agent
     python tests/gateway/test_qq_live.py
 
 Requires:
