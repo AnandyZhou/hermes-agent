@@ -32,6 +32,7 @@ PLATFORMS = {
     "feishu": "🪽 Feishu",
     "wecom": "💬 WeCom",
     "weixin": "💬 Weixin",
+    "qq": "🤖 QQ Bot",
     "webhook": "🔗 Webhook",
 }
 

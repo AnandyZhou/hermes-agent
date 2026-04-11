@@ -2052,6 +2052,34 @@ def _setup_weixin():
     _gateway_setup_weixin()
 
 
+def _setup_qq():
+    """Configure QQ Bot via Tencent QQ Bot API."""
+    print_header("QQ Bot")
+    existing = get_env_value("QQ_APP_ID")
+    if existing:
+        print_info("QQ Bot: already configured")
+        if not prompt_yes_no("Reconfigure QQ Bot?", False):
+            return
+
+    print_info("Connects Hermes to QQ via the official QQ Bot API.")
+    print_info("Create a bot at: https://q.qq.com/")
+    print()
+
+    app_id = prompt("QQ Bot AppID")
+    if not app_id:
+        print_warning("AppID is required — skipping QQ Bot setup")
+        return
+    save_env_value("QQ_APP_ID", app_id)
+
+    client_secret = prompt("QQ Bot ClientSecret", password=True)
+    if not client_secret:
+        print_warning("ClientSecret is required — skipping QQ Bot setup")
+        return
+    save_env_value("QQ_CLIENT_SECRET", client_secret)
+
+    print_success("QQ Bot configured! Run `hermes gateway` to start.")
+
+
 def _setup_bluebubbles():
     """Configure BlueBubbles iMessage gateway."""
     print_header("BlueBubbles (iMessage)")
@@ -2172,6 +2200,7 @@ _GATEWAY_PLATFORMS = [
     ("Mattermost", "MATTERMOST_TOKEN", _setup_mattermost),
     ("WhatsApp", "WHATSAPP_ENABLED", _setup_whatsapp),
     ("Weixin (WeChat)", "WEIXIN_ACCOUNT_ID", _setup_weixin),
+    ("QQ Bot", "QQ_APP_ID", _setup_qq),
     ("BlueBubbles (iMessage)", "BLUEBUBBLES_SERVER_URL", _setup_bluebubbles),
     ("Webhooks (GitHub, GitLab, etc.)", "WEBHOOK_ENABLED", _setup_webhooks),
 ]
