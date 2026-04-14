@@ -66,6 +66,7 @@ class Platform(Enum):
     WECOM_CALLBACK = "wecom_callback"
     WEIXIN = "weixin"
     BLUEBUBBLES = "bluebubbles"
+    QQ = "qq"
 
 
 @dataclass
@@ -294,6 +295,9 @@ class GatewayConfig:
                 connected.append(platform)
             # WeCom bot mode uses extra dict for bot credentials
             elif platform == Platform.WECOM and config.extra.get("bot_id"):
+                connected.append(platform)
+            # QQ Bot uses extra dict for app credentials
+            elif platform == Platform.QQ and config.extra.get("app_id"):
                 connected.append(platform)
             # WeCom callback mode uses corp_id or apps list
             elif platform == Platform.WECOM_CALLBACK and (
@@ -1085,6 +1089,32 @@ def _apply_env_overrides(config: GatewayConfig) -> None:
                 chat_id=weixin_home,
                 name=os.getenv("WEIXIN_HOME_CHANNEL_NAME", "Home"),
             )
+
+    # QQ Bot
+    qq_app_id = os.getenv("QQ_APP_ID")
+    qq_client_secret = os.getenv("QQ_CLIENT_SECRET")
+    if qq_app_id and qq_client_secret:
+        if Platform.QQ not in config.platforms:
+            config.platforms[Platform.QQ] = PlatformConfig()
+        config.platforms[Platform.QQ].enabled = True
+        config.platforms[Platform.QQ].extra.update({
+            "app_id": qq_app_id,
+            "client_secret": qq_client_secret,
+            "markdown_support": os.getenv("QQ_MARKDOWN_SUPPORT", "true").lower() in ("true", "1", "yes"),
+            "group_policy": os.getenv("QQ_GROUP_POLICY", "open"),
+        })
+        qq_allowlist = os.getenv("QQ_GROUP_ALLOWLIST", "")
+        if qq_allowlist:
+            config.platforms[Platform.QQ].extra["group_allowlist"] = [
+                g.strip() for g in qq_allowlist.split(",") if g.strip()
+            ]
+    qq_home = os.getenv("QQ_HOME_CHANNEL")
+    if qq_home and Platform.QQ in config.platforms:
+        config.platforms[Platform.QQ].home_channel = HomeChannel(
+            platform=Platform.QQ,
+            chat_id=qq_home,
+            name=os.getenv("QQ_HOME_CHANNEL_NAME", "Home"),
+        )
 
     # BlueBubbles (iMessage)
     bluebubbles_server_url = os.getenv("BLUEBUBBLES_SERVER_URL")

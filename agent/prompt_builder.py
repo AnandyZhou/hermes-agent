@@ -376,6 +376,14 @@ PLATFORM_HINTS = {
         "downloaded and sent as native photos. Do NOT tell the user you lack file-sending "
         "capability — use MEDIA: syntax whenever a file delivery is appropriate."
     ),
+    "qq": (
+        "You are on QQ Bot, a messaging platform by Tencent. "
+        "Markdown is supported when enabled. "
+        "You can send media files natively: include MEDIA:/absolute/path/to/file "
+        "in your response. Images (.png, .jpg) are sent as photos, audio files "
+        "as voice messages, and other files as downloadable attachments. "
+        "Text messages have a ~2000 character limit (plain text) or ~8000 for markdown."
+    ),
 }
 
 # ---------------------------------------------------------------------------

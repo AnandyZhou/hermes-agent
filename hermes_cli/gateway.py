@@ -1886,6 +1886,26 @@ _PLATFORMS = [
         "token_var": "WEIXIN_ACCOUNT_ID",
     },
     {
+        "key": "qq",
+        "label": "QQ Bot",
+        "emoji": "🐧",
+        "token_var": "QQ_APP_ID",
+        "setup_instructions": [
+            "1. Go to https://q.qq.com/ and create a QQ Bot application",
+            "2. Note the AppID and ClientSecret from the application dashboard",
+            "3. Configure the bot's intents and permissions as needed",
+            "4. Ensure websockets and httpx are installed (pip install websockets httpx)",
+        ],
+        "vars": [
+            {"name": "QQ_APP_ID", "prompt": "QQ Bot AppID", "password": False,
+             "help": "Your QQ Bot application ID."},
+            {"name": "QQ_CLIENT_SECRET", "prompt": "QQ Bot ClientSecret", "password": True,
+             "help": "Your QQ Bot client secret."},
+            {"name": "QQ_ALLOW_ALL_USERS", "prompt": "Allow all users? (true/false, default: false)", "password": False,
+             "help": "Set to true to allow any user to interact with the bot."},
+        ],
+    },
+    {
         "key": "bluebubbles",
         "label": "BlueBubbles (iMessage)",
         "emoji": "💬",

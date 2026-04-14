@@ -160,6 +160,7 @@ def _handle_send(args):
         "wecom": Platform.WECOM,
         "wecom_callback": Platform.WECOM_CALLBACK,
         "weixin": Platform.WEIXIN,
+        "qq": Platform.QQ,
         "email": Platform.EMAIL,
         "sms": Platform.SMS,
     }
@@ -382,6 +383,10 @@ async def _send_to_platform(platform, pconfig, chat_id, message, thread_id=None,
     # --- Weixin: use the native one-shot adapter helper for text + media ---
     if platform == Platform.WEIXIN:
         return await _send_weixin(pconfig, chat_id, message, media_files=media_files)
+
+    # --- QQ Bot ---
+    if platform == Platform.QQ:
+        return await _send_qq(pconfig, chat_id, message, media_files=media_files)
 
     # --- Non-Telegram platforms ---
     if media_files and not message.strip():
@@ -939,6 +944,32 @@ async def _send_weixin(pconfig, chat_id, message, media_files=None):
         )
     except Exception as e:
         return _error(f"Weixin send failed: {e}")
+
+
+async def _send_qq(pconfig, chat_id, message, media_files=None):
+    """Send via QQ Bot REST API."""
+    try:
+        from gateway.platforms.qq import QQBotAdapter, check_qq_requirements
+        if not check_qq_requirements():
+            return {"error": "QQ Bot requirements not met (need websockets + httpx)."}
+    except ImportError:
+        return {"error": "QQ Bot adapter not available."}
+
+    try:
+        from gateway.config import PlatformConfig
+        adapter = QQBotAdapter(pconfig if hasattr(pconfig, 'extra') else PlatformConfig(extra=pconfig if isinstance(pconfig, dict) else {}))
+        connected = await adapter.connect()
+        if not connected:
+            return _error("QQ: failed to connect")
+        try:
+            result = await adapter.send(chat_id, message)
+            if not result.success:
+                return _error(f"QQ send failed: {result.error}")
+            return {"success": True, "platform": "qq", "chat_id": chat_id, "message_id": result.message_id}
+        finally:
+            await adapter.disconnect()
+    except Exception as e:
+        return _error(f"QQ send failed: {e}")
 
 
 async def _send_bluebubbles(extra, chat_id, message):
